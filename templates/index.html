@@ -1,1 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Is this link safe?</h1>
+  <p>Paste any URL and our machine-learning model will analyse it for phishing signals.</p>
+
+  <form method="post" action="{{ url_for('scan') }}" class="scan-form">
+    <input type="text" name="url" placeholder="https://example.com/login" required
+           value="{{ result.url if result else '' }}" autocomplete="off" autofocus>
+    <button type="submit">Scan URL</button>
+  </form>
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+</section>
+
+{% if result %}
+<section class="card result {{ result.verdict }}">
+  <div class="result-head">
+    <div class="badge {{ result.verdict }}">
+      {% if result.verdict == 'phishing' %}⚠️ Likely Phishing
+      {% elif result.verdict == 'suspicious' %}❓ Suspicious
+      {% else %}✅ Looks Safe{% endif %}
+    </div>
+    <div class="score">{{ result.percent }}% <small>phishing probability</small></div>
+  </div>
+  <div class="meter"><div class="meter-fill {{ result.verdict }}" style="width: {{ result.percent }}%"></div></div>
+  <p class="url-line">{{ result.url }}</p>
+
+  {% if result.reasons %}
+  <h3>Warning signs detected</h3>
+  <ul class="reasons">
+    {% for r in result.reasons %}<li>{{ r }}</li>{% endfor %}
+  </ul>
+  {% else %}
+  <p class="muted">No obvious red flags found in the URL structure.</p>
+  {% endif %}
+  <p class="muted small">This analyses the URL only, not the page contents. Always be careful when entering credentials.</p>
+</section>
+{% endif %}
+
+<section class="stats">
+  <div class="stat"><b>{{ stats.total }}</b><span>Total scans</span></div>
+  <div class="stat danger"><b>{{ stats.phishing }}</b><span>Phishing</span></div>
+  <div class="stat warn"><b>{{ stats.suspicious }}</b><span>Suspicious</span></div>
+  <div class="stat ok"><b>{{ stats.safe }}</b><span>Safe</span></div>
+</section>
+{% endblock %}
 
