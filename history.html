@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Scan History · PhishGuard AI{% endblock %}
+{% block content %}
+<h1>Scan history</h1>
+
+<div class="filters">
+  <a href="{{ url_for('history') }}" class="{{ 'active' if not active }}">All ({{ stats.total }})</a>
+  <a href="{{ url_for('history', verdict='phishing') }}" class="{{ 'active' if active == 'phishing' }}">Phishing ({{ stats.phishing }})</a>
+  <a href="{{ url_for('history', verdict='suspicious') }}" class="{{ 'active' if active == 'suspicious' }}">Suspicious ({{ stats.suspicious }})</a>
+  <a href="{{ url_for('history', verdict='safe') }}" class="{{ 'active' if active == 'safe' }}">Safe ({{ stats.safe }})</a>
+</div>
+
+{% if rows %}
+<div class="card table-wrap">
+  <table>
+    <thead><tr><th>#</th><th>URL</th><th>Verdict</th><th>Probability</th><th>Scanned</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr>
+        <td>{{ r['id'] }}</td>
+        <td class="url-cell" title="{{ r['reasons'] or 'No red flags' }}">{{ r['url'] }}</td>
+        <td><span class="badge small {{ r['verdict'] }}">{{ r['verdict'] }}</span></td>
+        <td>{{ '%.1f' % (r['probability'] * 100) }}%</td>
+        <td>{{ r['scanned_at'] }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="muted">No scans yet. <a href="{{ url_for('index') }}">Scan your first URL</a>.</p>
+{% endif %}
+{% endblock %}

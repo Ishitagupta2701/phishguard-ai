@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}How it works · PhishGuard AI{% endblock %}
+{% block content %}
+<h1>How it works</h1>
+<div class="card prose">
+  <ol>
+    <li><b>Feature extraction</b> – each URL is converted into {{ features|length }} numeric features (length, dots, hyphens, IP address, subdomains, suspicious keywords, entropy, ...).</li>
+    <li><b>Machine learning</b> – a Random Forest classifier (scikit-learn) trained on labelled phishing / legitimate URLs outputs a phishing probability.</li>
+    <li><b>Verdict</b> – ≥ 70% = <i>phishing</i>, 40–69% = <i>suspicious</i>, &lt; 40% = <i>safe</i>.</li>
+    <li><b>Explanation</b> – rule-based checks list human-readable warning signs.</li>
+    <li><b>Storage</b> – every scan is saved in a SQLite database for history and statistics.</li>
+  </ol>
+  <h3>Features used</h3>
+  <p class="chips">{% for f in features %}<code>{{ f }}</code>{% endfor %}</p>
+  <h3>REST API</h3>
+  <pre>curl -X POST http://127.0.0.1:5000/api/scan \
+  -H "Content-Type: application/json" \
+  -d '{"url": "http://paypal-secure-login.xyz/verify"}'</pre>
+</div>
+{% endblock %}
